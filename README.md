@@ -1,1 +1,470 @@
 # My-website
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tương Tác: Thực Hành CLI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Muted Earth Tones -->
+    <!-- Application Structure Plan: The application transforms the linear report into an interactive, four-section learning module: 1) An interactive "CLI Toolkit" to explore individual commands, replacing the static table. 2) A step-by-step "Project Walkthrough" with visual directory updates to demonstrate the commands in action. 3) An "Automation Power-Up" section showcasing the bash script and aliases. 4) A "CLI vs. GUI Showdown" with a visual chart for comparison. This thematic structure is chosen over the report's linear format to create a more engaging, guided learning experience, moving from basic tools to application, advanced usage, and final analysis. -->
+    <!-- Visualization & Content Choices: 1. Command Table -> Goal: Inform/Organize -> Interactive Tabbed/Accordion Component -> Click to reveal details -> Justification: More engaging and less overwhelming than a large table -> Vanilla JS DOM manipulation. 2. CLI vs. GUI Table -> Goal: Compare -> Bar Chart + Side-by-Side Cards -> Toggle criteria -> Justification: A chart provides a quick visual summary of the comparison, making the key takeaways more impactful -> Chart.js (Canvas). 3. Project Steps -> Goal: Change/Organize -> Interactive Step-by-step wizard -> Click next/prev -> Justification: Guides user through the process, showing cause and effect clearly -> Vanilla JS DOM manipulation. CONFIRM: NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #F8F7F4;
+            color: #44403C;
+        }
+        .bg-primary { background-color: #F8F7F4; }
+        .bg-secondary { background-color: #FFFFFF; }
+        .bg-accent { background-color: #115E59; }
+        .text-accent { color: #115E59; }
+        .border-accent { border-color: #115E59; }
+        .btn-accent {
+            background-color: #115E59;
+            color: #FFFFFF;
+            transition: background-color 0.3s ease;
+        }
+        .btn-accent:hover {
+            background-color: #0F766E;
+        }
+        .nav-link {
+            position: relative;
+            cursor: pointer;
+            color: #44403C;
+            padding-bottom: 4px;
+        }
+        .nav-link.active {
+            font-weight: 600;
+            color: #115E59;
+        }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #115E59;
+        }
+        .code-block {
+            background-color: #282c34;
+            color: #abb2bf;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+        }
+        .chart-container {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body class="bg-primary">
+
+    <header class="bg-secondary shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-xl font-bold text-accent">Báo Cáo Thực Hành CLI</div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#muc-tieu" class="nav-link active">Mục Tiêu</a>
+                    <a href="#cong-cu" class="nav-link">Bộ Công Cụ</a>
+                    <a href="#huong-dan" class="nav-link">Hướng Dẫn</a>
+                    <a href="#nang-cao" class="nav-link">Nâng Cao</a>
+                    <a href="#so-sanh" class="nav-link">So Sánh</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="muc-tieu" class="text-center mb-16">
+            <h1 class="text-3xl md:text-4xl font-bold text-accent mb-4">BÁO CÁO BÀI TẬP THỰC HÀNH CLI</h1>
+            <div class="text-lg text-stone-600">
+                <p><strong>Môn học:</strong> Hệ Thống Nhúng Và Iot</p>
+                <p><strong>Nhóm:</strong> 3 | <strong>MSSV:</strong> 25139052</p>
+                <p><strong>Ngày thực hiện:</strong> 08/10/2025 | <strong>Công cụ:</strong> Git Bash, Gemini</p>
+            </div>
+            <p class="max-w-3xl mx-auto mt-6 text-stone-700">
+                Báo cáo này trình bày quá trình thực hành và làm chủ các lệnh cơ bản của Giao diện Dòng lệnh (CLI) nhằm quản lý hiệu quả các file, thư mục và áp dụng kỹ năng tự động hóa công việc bằng Script.
+            </p>
+        </section>
+        
+        <section id="cong-cu" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-10 text-accent">Bộ Công Cụ Lệnh CLI</h2>
+            <div class="grid md:grid-cols-12 gap-8">
+                <div class="md:col-span-4">
+                    <ul id="command-list" class="space-y-2">
+                    </ul>
+                </div>
+                <div class="md:col-span-8 bg-white p-6 rounded-lg shadow-md">
+                    <div id="command-details">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="huong-dan" class="mb-16 bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-bold text-center mb-10 text-accent">Hướng Dẫn Dự Án Từng Bước</h2>
+            <div class="flex flex-col lg:flex-row gap-8 items-center">
+                <div class="w-full lg:w-1/2">
+                    <div id="step-info" class="bg-stone-50 p-6 rounded-md">
+                        <h3 id="step-title" class="text-xl font-bold text-accent mb-2"></h3>
+                        <p id="step-description" class="text-stone-700 mb-4"></p>
+                        <div class="code-block text-sm">
+                            <code id="step-command"></code>
+                        </div>
+                    </div>
+                    <div class="flex justify-center mt-6 space-x-4">
+                        <button id="prev-step" class="btn-accent py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">‹ Quay Lại</button>
+                        <button id="next-step" class="btn-accent py-2 px-4 rounded-md">Tiếp Theo ›</button>
+                    </div>
+                </div>
+                <div class="w-full lg:w-1/2 bg-stone-800 p-6 rounded-lg text-white font-mono text-sm">
+                    <p class="mb-2">Cấu trúc thư mục:</p>
+                    <div id="file-structure"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="nang-cao" class="mb-16">
+             <h2 class="text-3xl font-bold text-center mb-10 text-accent">Tự Động Hóa & Tối Ưu Hóa Nâng Cao</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-4 text-accent">Tự Động Hóa với Bash Script</h3>
+                    <p class="mb-4 text-stone-700">Tệp Bash Script này tự động hóa toàn bộ quá trình thiết lập, quản lý file, và dọn dẹp dự án chỉ với một lệnh duy nhất. Đây là minh chứng mạnh mẽ cho khả năng tăng tốc năng suất vượt trội của CLI.</p>
+                    <div class="code-block text-xs">
+<pre><code>#!/bin/bash
+
+echo "Bước 1: Di chuyển vào Desktop"
+cd ~/Desktop
+
+echo "Bước 2: Tạo cấu trúc thư mục DoAnKTMT"
+mkdir DoAnKTMT
+cd DoAnKTMT
+mkdir src docs assets
+
+echo "Bước 3: Tạo và di chuyển các file"
+touch main.c helpers.h report.docx logo.png
+mv main.c helpers.h src/
+mv report.docx docs/
+mv logo.png assets/
+
+echo "Bước 4: Sao chép và đổi tên"
+cp src/main.c src/main_backup.c
+mv docs/report.docx docs/BaoCaoCuoiKy.docx
+
+echo "Cấu trúc dự án đã được tạo thành công:"
+ls -R
+echo "Bước 5: Dọn dẹp dự án"
+cd ..
+rm -r DoAnKTMT
+echo "Đã xóa thư mục DoAnKTMT."
+</code></pre>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h3 class="text-2xl font-semibold mb-4 text-accent">Tối Ưu Hóa với Alias</h3>
+                    <p class="mb-4 text-stone-700">Alias là các "lệnh tắt" tùy chỉnh để rút ngắn các lệnh dài hoặc thường xuyên sử dụng, giúp tăng tốc độ làm việc.</p>
+                    <div class="space-y-6">
+                        <div>
+                            <p class="font-semibold">Thay vì gõ:</p>
+                            <code class="code-block text-sm inline-block mt-1">cd ..</code>
+                            <p class="font-semibold mt-2">Có thể dùng alias và chỉ cần gõ:</p>
+                            <code class="code-block text-sm inline-block mt-1">..</code>
+                            <p class="mt-2 text-sm text-stone-600">Lệnh tạo alias: <code class="bg-stone-200 p-1 rounded">alias ..='cd ..'</code></p>
+                        </div>
+                        <div>
+                            <p class="font-semibold">Thay vì gõ:</p>
+                            <code class="code-block text-sm inline-block mt-1">ls -la</code>
+                            <p class="font-semibold mt-2">Có thể dùng alias và chỉ cần gõ:</p>
+                            <code class="code-block text-sm inline-block mt-1">lsl</code>
+                            <p class="mt-2 text-sm text-stone-600">Lệnh tạo alias: <code class="bg-stone-200 p-1 rounded">alias lsl='ls -la'</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="so-sanh" class="text-center bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-3xl font-bold mb-4 text-accent">Phân tích kết quả</h2>
+            <p class="max-w-3xl mx-auto mb-10 text-stone-700">
+                Các lệnh CLI hỗ trợ việc quản lý file và thư mục bằng cách cung cấp một giao diện mạnh mẽ, nhanh chóng, và có khả năng tự động hóa cao. Trong khi GUI lý tưởng cho sự trực quan và các thao tác đơn lẻ, CLI là công cụ không thể thiếu cho các nhà phát triển, quản trị viên hệ thống, và các tác vụ yêu cầu tính lặp lại và chính xác cao.
+            </p>
+              <h2 class="text-3xl font-bold mb-4 text-accent">So Sánh CLI và GUI</h2>
+            <p class="max-w-3xl mx-auto mb-10 text-stone-700">
+                CLI là công cụ mạnh mẽ, lý tưởng cho các tác vụ cần chính xác và tính lặp lại. Trong khi GUI cung cấp sự trực quan, CLI giúp nâng cao đáng kể năng suất và khả năng tự động hóa công việc.
+            </p>
+            <div class="chart-container">
+                <canvas id="cliVsGuiChart"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-6 text-stone-500 text-sm">
+        <p>&copy; 2025 - Báo cáo thực hành tương tác. Thiết kế bởi Nhóm 3.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const commands = [
+                {
+                    name: 'cd',
+                    fullName: 'Change Directory',
+                    description: 'Dùng để di chuyển giữa các thư mục.',
+                    syntax: 'cd Desktop, cd DoAnKTMT, cd ..'
+                },
+                {
+                    name: 'pwd',
+                    fullName: 'Print Working Directory',
+                    description: 'Hiển thị đường dẫn tuyệt đối của thư mục hiện tại.',
+                    syntax: 'pwd'
+                },
+                {
+                    name: 'mkdir',
+                    fullName: 'Make Directory',
+                    description: 'Tạo một hoặc nhiều thư mục mới.',
+                    syntax: 'mkdir DoAnKTMT src docs assets'
+                },
+                {
+                    name: 'touch',
+                    fullName: 'Touch',
+                    description: 'Tạo file rỗng hoặc cập nhật thời gian truy cập file.',
+                    syntax: 'touch main.c helpers.h report.docx logo.png'
+                },
+                {
+                    name: 'mv',
+                    fullName: 'Move / Rename',
+                    description: 'Di chuyển file/thư mục HOẶC đổi tên file/thư mục.',
+                    syntax: 'mv main.c helpers.h src/, mv docs/report.docx docs/BaoCaoCuoiKy.docx'
+                },
+                {
+                    name: 'cp',
+                    fullName: 'Copy',
+                    description: 'Sao chép file hoặc thư mục.',
+                    syntax: 'cp src/main.c src/main_backup.c'
+                },
+                {
+                    name: 'rm -r',
+                    fullName: 'Remove Recursive',
+                    description: 'Xóa thư mục và tất cả nội dung bên trong nó (xóa vĩnh viễn).',
+                    syntax: 'rm -r DoAnKTMT'
+                }
+            ];
+
+            const commandListEl = document.getElementById('command-list');
+            const commandDetailsEl = document.getElementById('command-details');
+            
+            function renderCommandDetails(cmd) {
+                commandDetailsEl.innerHTML = `
+                    <h3 class="text-2xl font-bold text-accent mb-2">${cmd.name} <span class="text-lg font-normal text-stone-500">- ${cmd.fullName}</span></h3>
+                    <p class="text-stone-700 mb-4">${cmd.description}</p>
+                    <p class="font-semibold text-stone-800">Cú pháp đã dùng trong dự án:</p>
+                    <div class="code-block text-sm mt-2"><code>${cmd.syntax}</code></div>
+                `;
+            }
+
+            commands.forEach((cmd, index) => {
+                const li = document.createElement('li');
+                const button = document.createElement('button');
+                button.textContent = cmd.name;
+                button.className = 'w-full text-left p-3 rounded-md transition-colors duration-200';
+                if (index === 0) {
+                    button.classList.add('bg-accent', 'text-white', 'font-semibold');
+                } else {
+                    button.classList.add('hover:bg-teal-100');
+                }
+                button.addEventListener('click', () => {
+                    renderCommandDetails(cmd);
+                    document.querySelectorAll('#command-list button').forEach(btn => {
+                        btn.classList.remove('bg-accent', 'text-white', 'font-semibold');
+                        btn.classList.add('hover:bg-teal-100');
+                    });
+                    button.classList.add('bg-accent', 'text-white', 'font-semibold');
+                    button.classList.remove('hover:bg-teal-100');
+                });
+                li.appendChild(button);
+                commandListEl.appendChild(li);
+            });
+
+            renderCommandDetails(commands[0]);
+
+            const projectSteps = [
+                 {
+                    title: 'Bước 1: Di chuyển vào Thư mục Làm việc',
+                    description: 'Sử dụng `cd` để vào thư mục Desktop và `pwd` để xác nhận vị trí hiện tại.',
+                    command: 'cd ~/Desktop\npwd',
+                    structure: '~/Desktop'
+                },
+                {
+                    title: 'Bước 2: Tạo Cấu trúc Thư mục Dự án',
+                    description: 'Tạo thư mục gốc `DoAnKTMT` và 3 thư mục con bên trong.',
+                    command: 'mkdir DoAnKTMT\ncd DoAnKTMT\nmkdir src docs assets',
+                    structure: 'DoAnKTMT/\n  ├── assets/\n  ├── docs/\n  └── src/'
+                },
+                {
+                    title: 'Bước 3: Tạo và Sắp xếp Files',
+                    description: 'Tạo các file rỗng và di chuyển chúng vào các thư mục tương ứng bằng lệnh `mv`.',
+                    command: 'touch main.c helpers.h report.docx logo.png\nmv main.c helpers.h src/\nmv report.docx docs/\nmv logo.png assets/',
+                    structure: 'DoAnKTMT/\n  ├── assets/\n  │   └── logo.png\n  ├── docs/\n  │   └── report.docx\n  └── src/\n      ├── helpers.h\n      └── main.c'
+                },
+                {
+                    title: 'Bước 4: Sao chép và Đổi tên File',
+                    description: 'Sao chép `main.c` để tạo file backup và đổi tên file báo cáo.',
+                    command: 'cp src/main.c src/main_backup.c\nmv docs/report.docx docs/BaoCaoCuoiKy.docx',
+                    structure: 'DoAnKTMT/\n  ├── assets/\n  │   └── logo.png\n  ├── docs/\n  │   └── BaoCaoCuoiKy.docx\n  └── src/\n      ├── helpers.h\n      ├── main.c\n      └── main_backup.c'
+                },
+                {
+                    title: 'Bước 5: Dọn dẹp Dự án',
+                    description: 'Sau khi hoàn thành, xóa toàn bộ thư mục dự án để dọn dẹp.',
+                    command: 'cd ..\nrm -r DoAnKTMT',
+                    structure: 'Thư mục DoAnKTMT đã bị xóa.'
+                },
+            ];
+
+            let currentStep = 0;
+            const stepTitleEl = document.getElementById('step-title');
+            const stepDescriptionEl = document.getElementById('step-description');
+            const stepCommandEl = document.getElementById('step-command');
+            const fileStructureEl = document.getElementById('file-structure');
+            const prevBtn = document.getElementById('prev-step');
+            const nextBtn = document.getElementById('next-step');
+
+            function updateStep(stepIndex) {
+                const step = projectSteps[stepIndex];
+                stepTitleEl.textContent = step.title;
+                stepDescriptionEl.textContent = step.description;
+                stepCommandEl.textContent = step.command;
+                fileStructureEl.innerHTML = `<pre><code>${step.structure}</code></pre>`;
+                
+                prevBtn.disabled = stepIndex === 0;
+                nextBtn.disabled = stepIndex === projectSteps.length - 1;
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    updateStep(currentStep);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentStep < projectSteps.length - 1) {
+                    currentStep++;
+                    updateStep(currentStep);
+                }
+            });
+
+            updateStep(0);
+
+            const chartCtx = document.getElementById('cliVsGuiChart').getContext('2d');
+            const cliVsGuiChart = new Chart(chartCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Hiệu suất', 'Tự động hóa', 'Sử dụng tài nguyên', 'Độ khó ban đầu', 'Tính trực quan'],
+                    datasets: [{
+                        label: 'CLI (Dòng lệnh)',
+                        data: [9, 10, 3, 7, 2],
+                        backgroundColor: 'rgba(17, 94, 89, 0.7)',
+                        borderColor: 'rgba(17, 94, 89, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'GUI (Đồ họa)',
+                        data: [5, 2, 8, 2, 10],
+                        backgroundColor: 'rgba(124, 124, 124, 0.5)',
+                        borderColor: 'rgba(124, 124, 124, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2
+                            },
+                             grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                             grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += `${context.parsed.y}/10`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.5
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelector(link.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>
